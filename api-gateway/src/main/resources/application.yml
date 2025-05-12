@@ -1,0 +1,53 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/users/**
+          filters:
+            - StripPrefix=2
+        - id: case-service
+          uri: lb://CASE-SERVICE
+          predicates:
+            - Path=/api/cases/**
+          filters:
+            - StripPrefix=2
+        - id: document-service
+          uri: lb://DOCUMENT-SERVICE
+          predicates:
+            - Path=/api/documents/**
+          filters:
+            - StripPrefix=2
+        - id: scheduling-service
+          uri: lb://SCHEDULING-SERVICE
+          predicates:
+            - Path=/api/schedules/**
+          filters:
+            - StripPrefix=2
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
